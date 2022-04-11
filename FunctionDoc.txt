@@ -1,0 +1,38 @@
+Timothy Queva
+CS3130 Lab4
+March 10, 2021
+
+This document describes the module/functions of the client-server database program.
+
+------------------------------------------------------------------------------------------
+Client functions (clientFunctions.py):
+
+transmit(socket,msg)
+	-Connected socket is passed to first argument and the header + message is passed
+	to the second argument
+	-function adds a terminating string to the end, encodes and sends to socket
+receive(socket)
+	-Connected socket is passed to this function in order to receive messages from
+	that socket
+	-
+add(host,port)
+	-
+display(host,port)
+
+rm(host,port)
+
+displayall(host,port)
+
+
+------------------------------------------------------------------------------------------
+Server functions (serverFunctions.py):
+
+recvall(socket)
+
+addDB(socket,dictionary,record)
+
+rmDB(socket,dictionary,record)
+
+displayDB(socket,dictionary,record)
+
+displayallDB(sc,db,recrd)

@@ -1,0 +1,82 @@
+Timothy Queva
+CS3130 Lab4
+March 10, 2021
+
+
+This document details the protocol used for communication between client and server. Details
+about other aspects of the program can be found in the readme file (README.txt).
+
+------------------------------------------------------------------------------------------------------
+PROTOCOL (general overview):
+
+After a request is made, server services/responds to the request and closes the socket/connection:
+-If it is an add request, server services the request, responds with confirmation of record
+addition, and closes the socket/connection.
+-If it is a display or display all request, server services the request, responds with desired
+record(s), and closes the socket/connection.
+-If it is a remove request, server responds with record in question and asks for confirmation
+to delete. Server then wait for client's response. If/when server receives either "y" or "n", it
+accordingly services or aborts the request, responds with confirmation of the action, and
+closes the socket/connection.
+------------------------------------------------------------------------------------------------------
+PROTOCOL (client-to-server message format):
+
+Structure description:
+	-Header: the request followed by ": ". All lowercase.
+	    -Note: no header is used when responding to server's verify request
+	-Message body: Required details supplied following this if applicable
+	-End of message: indicated by a " \r\n*!*\r\n"
+
+All possible requests:
+	1) Add request
+	                <header><-------message body (msg)-----><terminating string>
+	     (Example>	   add: id,firstname,lastname,department \r\n*!*\r\n
+	2) Display request
+	                <header-><msg><terminating string>
+	     (Example)	display: 12345 \r\n*!*\r\n
+	3) Displayall request: no body required
+	                 <-header--><terminating string>
+	     (Example) 	 displayall  \r\n*!*\r\n
+	4) Remove request
+	                <header><msg><terminating string>
+	     (Example)	    rm: 12345 \r\n*!*\r\n
+
+-------------------------------------------------------------------------------------------------------
+PROTOCOL (server-to-client):
+
+Description:
+	-Header: none used unless client previously asked server to remove a record
+	-Message body: response to client request
+	-End of message: indicated by a " \r\n*!*\r\n"
+
+Server's potential response to following requests:
+	1) Add request
+			 <-------------------Message body-----------------------><terminating string>
+	      (Example)  Record (1234567:Timothy:Queva:Science) added to database \r\n*!*\r\n
+	2) Display request
+	      (Example)  Employee ID: 1234567		<message body>
+			 First name : Timothy		<message body>
+			 Last name  : Queva		<message body>
+			 Department : Science		<message body>
+			 \r\n*!*\r\n			<terminating string>
+	3) Displayall request
+	      (Example)  Employee ID     First Name     Last Name     Department <message body>
+			 1234567	 Timothy	Queva	      Science	 <message body>
+			 7654321	 Tester		1	      54	 <message body>
+			 \r\n*!*\r\n						 <terminating string>
+	4) Remove request
+	      (Example)  verify:					<header (note: has one space after colon, but no "\n")>
+			 The following record will be deleted:		<message body>
+			 Employee ID: 1234567				<message body>
+			 First name : Timothy				<message body>
+			 Last name  : Queva				<message body>
+			 Department : Science				<message body>
+			 Proceed? (Y/n): 				<message body>
+			 \r\n*!*\r\n					<terminating string>
+	5) Verify request (only used within context of remove request)
+	      -ie. if user responded to 4) inappropriately, server will resend modified verify request
+
+	      (Example)  verify:					<header (note: has one space after colon, but no "\n")>
+			 Proceed? (Y/n): 				<message body>
+			 \r\n*!*\r\n					<terminating string>
+		
